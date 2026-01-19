@@ -1,8 +1,8 @@
 import type { DashboardSummary, Incident, Server } from '@/types';
 import { Platform } from 'react-native';
 
-// Replit backend URL
-const REPLIT_BACKEND_URL = 'https://d5872524-563a-4494-928a-3543b0cd9837-00-x1o4xbqii3fw.sisko.replit.dev';
+// Replit backend URL (Production Deployment)
+const REPLIT_BACKEND_URL = 'https://deploy-guard--atulalexander20.replit.app';
 
 // Detect environment and return appropriate URL
 const getBaseUrl = () => {
