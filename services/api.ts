@@ -1,21 +1,35 @@
 import type { DashboardSummary, Incident, Server } from '@/types';
 import { Platform } from 'react-native';
 
-// Detect if running on Replit or localhost
+// Replit backend URL
+const REPLIT_BACKEND_URL = 'https://d5872524-563a-4494-928a-3543b0cd9837-00-x1o4xbqii3fw.sisko.replit.dev';
+
+// Detect environment and return appropriate URL
 const getBaseUrl = () => {
+    // For mobile apps, always use the Replit backend
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
+        return REPLIT_BACKEND_URL;
+    }
+
+    // For web, check if running on Replit or localhost
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
         // If on Replit, use the same origin
         if (window.location.hostname.includes('replit') || window.location.hostname.includes('.repl.co')) {
             return window.location.origin;
         }
+        // For local web development, use localhost
+        if (window.location.hostname === 'localhost') {
+            return 'http://localhost:3001';
+        }
     }
-    // Default to localhost for development
-    return 'http://localhost:3001';
+
+    // Default to Replit backend
+    return REPLIT_BACKEND_URL;
 };
 
 const BASE_URL = getBaseUrl();
 const API_BASE = `${BASE_URL}/api`;
-const WS_URL = BASE_URL.replace('http', 'ws');
+const WS_URL = BASE_URL.replace('https', 'wss').replace('http', 'ws');
 
 // =====================
 // REST API Client
