@@ -83,6 +83,42 @@ export async function updateIncident(id: string, data: Partial<Incident>): Promi
     }
 }
 
+// Add a new server/website to monitor
+export async function addServer(url: string, name?: string): Promise<{ success: boolean; data?: Server; error?: string }> {
+    try {
+        const response = await fetch(`${API_BASE}/servers`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url, name }),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            return { success: false, error: error.error || 'Failed to add website' };
+        }
+        const data = await response.json();
+        return { success: true, data };
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, error: 'Failed to connect to backend' };
+    }
+}
+
+// Delete a server/website
+export async function deleteServer(id: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        const response = await fetch(`${API_BASE}/servers/${id}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            return { success: false, error: 'Failed to remove website' };
+        }
+        return { success: true };
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, error: 'Failed to connect to backend' };
+    }
+}
+
 export async function sendChatMessage(message: string): Promise<string> {
     try {
         const response = await fetch(`${API_BASE}/chat`, {

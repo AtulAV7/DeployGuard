@@ -21,7 +21,7 @@ import { Card } from '@/components/ui/Card';
 import { Colors, Gradients, StatusColors } from '@/constants/Colors';
 import { Layout } from '@/constants/Layout';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { fetchServers, wsClient } from '@/services/api';
+import { addServer, deleteServer, fetchServers, wsClient } from '@/services/api';
 import type { Server } from '@/types';
 
 export default function ServersScreen() {
@@ -77,27 +77,18 @@ export default function ServersScreen() {
         }
 
         setIsAdding(true);
-        try {
-            const response = await fetch('http://localhost:3001/api/servers', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url, name: newName.trim() || undefined }),
-            });
+        const result = await addServer(url, newName.trim() || undefined);
 
-            if (response.ok) {
-                setNewUrl('');
-                setNewName('');
-                setShowAddModal(false);
-                loadServers();
-            } else {
-                const error = await response.json();
-                Alert.alert('Error', error.error || 'Failed to add website');
-            }
-        } catch (error) {
-            Alert.alert('Error', 'Failed to connect to backend');
-        } finally {
-            setIsAdding(false);
+        if (result.success) {
+            setNewUrl('');
+            setNewName('');
+            setShowAddModal(false);
+            loadServers();
+        } else {
+            Alert.alert('Error', result.error || 'Failed to add website');
         }
+
+        setIsAdding(false);
     };
 
     const handleRemoveWebsite = async (id: string, name: string) => {
@@ -116,21 +107,13 @@ export default function ServersScreen() {
             });
 
         if (shouldRemove) {
-            try {
-                const response = await fetch(`http://localhost:3001/api/servers/${id}`, {
-                    method: 'DELETE'
-                });
-                if (response.ok) {
-                    setServers(prev => prev.filter(s => s.id !== id));
-                } else {
-                    Platform.OS === 'web'
-                        ? window.alert('Failed to remove website')
-                        : Alert.alert('Error', 'Failed to remove website');
-                }
-            } catch (error) {
+            const result = await deleteServer(id);
+            if (result.success) {
+                setServers(prev => prev.filter(s => s.id !== id));
+            } else {
                 Platform.OS === 'web'
-                    ? window.alert('Failed to remove website')
-                    : Alert.alert('Error', 'Failed to remove website');
+                    ? window.alert(result.error || 'Failed to remove website')
+                    : Alert.alert('Error', result.error || 'Failed to remove website');
             }
         }
     };
