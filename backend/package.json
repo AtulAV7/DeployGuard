@@ -1,0 +1,17 @@
+{
+    "name": "deployguard-backend",
+    "version": "1.0.0",
+    "description": "DeployGuard Backend API with Groq AI Integration",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "node src/index.js",
+        "dev": "node --watch src/index.js"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "groq-sdk": "^0.5.0",
+        "ws": "^8.14.2"
+    }
+}

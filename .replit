@@ -1,0 +1,20 @@
+run = "cd backend && npm install && npm start"
+entrypoint = "backend/src/index.js"
+
+[env]
+PORT = "3001"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "cd backend && npm start"]
+deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 3001
+externalPort = 80
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
