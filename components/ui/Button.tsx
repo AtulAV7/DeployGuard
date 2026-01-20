@@ -85,7 +85,7 @@ export function Button({
                             sizeStyles.text,
                             variant === 'ghost' && styles.ghostText,
                             variant === 'secondary' && styles.secondaryText,
-                            icon && styles.textWithIcon,
+                            icon ? styles.textWithIcon : undefined,
                         ]}
                     >
                         {title}

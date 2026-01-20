@@ -1,24 +1,40 @@
-// Server types
+// Server types - Updated to match backend response
 export interface Server {
     id: string;
     name: string;
     host: string;
-    status: 'healthy' | 'warning' | 'critical' | 'offline';
-    lastChecked: Date;
+    url?: string;  // Added URL field from backend
+    status: 'healthy' | 'warning' | 'critical' | 'offline' | 'checking';
+    lastChecked: string | null;
     metrics: ServerMetrics;
     tags?: string[];
+    history?: ServerHistoryEntry[];
+}
+
+export interface ServerHistoryEntry {
+    timestamp: string;
+    responseTime: number;
+    statusCode: number;
+    status: string;
 }
 
 export interface ServerMetrics {
-    cpu: number;        // 0-100
-    memory: number;     // 0-100
-    disk: number;       // 0-100
-    network: {
-        in: number;       // bytes/sec
-        out: number;      // bytes/sec
+    responseTime: number;
+    statusCode: number;
+    uptime: number;
+    lastError: string | null;
+    successfulChecks: number;
+    totalChecks: number;
+    ssl: boolean | null;
+    contentLength: number;
+    // Legacy fields for compatibility
+    cpu?: number;
+    memory?: number;
+    disk?: number;
+    network?: {
+        in: number;
+        out: number;
     };
-    uptime: number;     // seconds
-    responseTime: number; // ms
 }
 
 // Incident types
@@ -33,10 +49,10 @@ export interface Incident {
     description: string;
     severity: IncidentSeverity;
     status: IncidentStatus;
-    createdAt: Date;
-    updatedAt: Date;
-    acknowledgedAt?: Date;
-    resolvedAt?: Date;
+    createdAt: string;
+    updatedAt: string;
+    acknowledgedAt?: string;
+    resolvedAt?: string;
     acknowledgedBy?: string;
     timeline?: IncidentEvent[];
     suggestedFixes?: SuggestedFix[];
@@ -44,7 +60,7 @@ export interface Incident {
 
 export interface IncidentEvent {
     id: string;
-    timestamp: Date;
+    timestamp: string;
     type: 'created' | 'acknowledged' | 'escalated' | 'comment' | 'action' | 'resolved';
     message: string;
     user?: string;
@@ -85,7 +101,7 @@ export interface AlertRule {
     operator: '>' | '<' | '==' | '>=' | '<=';
     threshold: number;
     severity: IncidentSeverity;
-    serverId?: string; // null = all servers
+    serverId?: string;
 }
 
 // Quick actions
@@ -98,14 +114,15 @@ export interface QuickAction {
     requiresConfirmation: boolean;
 }
 
-// Dashboard summary
+// Dashboard summary - Updated to match backend
 export interface DashboardSummary {
     totalServers: number;
     healthyServers: number;
     warningServers: number;
     criticalServers: number;
-    offlineServers: number;
-    activeIncidents: number;
-    resolvedToday: number;
-    averageUptime: number;
+    offlineServers?: number;
+    activeIncidents?: number;
+    resolvedToday?: number;
+    averageUptime?: number;
+    averageResponseTime?: number;  // Added from backend
 }

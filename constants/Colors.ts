@@ -38,19 +38,19 @@ export const StatusColors = {
   success: '#10B981',
   successLight: '#34D399',
   successBg: 'rgba(16, 185, 129, 0.15)',
-  
+
   warning: '#F59E0B',
   warningLight: '#FBBF24',
   warningBg: 'rgba(245, 158, 11, 0.15)',
-  
+
   danger: '#EF4444',
   dangerLight: '#F87171',
   dangerBg: 'rgba(239, 68, 68, 0.15)',
-  
+
   info: '#3B82F6',
   infoLight: '#60A5FA',
   infoBg: 'rgba(59, 130, 246, 0.15)',
-  
+
   primary: '#6366F1',
   primaryLight: '#818CF8',
   primaryBg: 'rgba(99, 102, 241, 0.15)',
@@ -58,10 +58,10 @@ export const StatusColors = {
 
 // Gradient presets
 export const Gradients = {
-  primary: ['#6366F1', '#8B5CF6'],
-  success: ['#10B981', '#34D399'],
-  warning: ['#F59E0B', '#FBBF24'],
-  danger: ['#EF4444', '#F87171'],
-  dark: ['#1E293B', '#0F172A'],
-  card: ['rgba(30, 41, 59, 0.8)', 'rgba(15, 23, 42, 0.9)'],
+  primary: ['#6366F1', '#8B5CF6'] as const,
+  success: ['#10B981', '#34D399'] as const,
+  warning: ['#F59E0B', '#FBBF24'] as const,
+  danger: ['#EF4444', '#F87171'] as const,
+  dark: ['#1E293B', '#0F172A'] as const,
+  card: ['rgba(30, 41, 59, 0.8)', 'rgba(15, 23, 42, 0.9)'] as const,
 };

@@ -77,7 +77,7 @@ export function IncidentItem({ incident, onPress }: IncidentItemProps) {
     );
 }
 
-function formatTimeAgo(date: Date): string {
+function formatTimeAgo(date: string): string {
     const now = new Date();
     const diffMs = now.getTime() - new Date(date).getTime();
     const diffMins = Math.floor(diffMs / 60000);

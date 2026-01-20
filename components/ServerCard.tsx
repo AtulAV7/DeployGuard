@@ -5,7 +5,6 @@ import type { Server } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { MetricChart } from './MetricChart';
 import { StatusBadge } from './ui/Badge';
 import { Card } from './ui/Card';
 
@@ -24,7 +23,9 @@ export function ServerCard({ server, onPress, compact = false }: ServerCardProps
             case 'healthy': return StatusColors.success;
             case 'warning': return StatusColors.warning;
             case 'critical': return StatusColors.danger;
-            case 'offline': return '#64748B';
+            case 'checking': return StatusColors.info;
+            case 'offline':
+            default: return '#64748B';
         }
     };
 
@@ -40,12 +41,12 @@ export function ServerCard({ server, onPress, compact = false }: ServerCardProps
                     </View>
                     <View style={styles.compactMetrics}>
                         <View style={styles.compactMetric}>
-                            <Ionicons name="hardware-chip-outline" size={14} color="#94A3B8" />
-                            <Text style={styles.compactValue}>{server.metrics.cpu}%</Text>
+                            <Ionicons name="flash-outline" size={14} color="#94A3B8" />
+                            <Text style={styles.compactValue}>{server.metrics?.responseTime || 0}ms</Text>
                         </View>
                         <View style={styles.compactMetric}>
-                            <Ionicons name="server-outline" size={14} color="#94A3B8" />
-                            <Text style={styles.compactValue}>{server.metrics.memory}%</Text>
+                            <Ionicons name="checkmark-circle-outline" size={14} color="#94A3B8" />
+                            <Text style={styles.compactValue}>{server.metrics?.uptime || 0}%</Text>
                         </View>
                     </View>
                 </Card>
@@ -63,42 +64,43 @@ export function ServerCard({ server, onPress, compact = false }: ServerCardProps
                             {server.name}
                         </Text>
                     </View>
-                    <StatusBadge status={server.status} />
+                    <StatusBadge status={server.status as 'healthy' | 'warning' | 'critical' | 'offline'} />
                 </View>
 
                 <Text style={styles.host}>{server.host}</Text>
 
                 <View style={styles.metricsRow}>
-                    <MetricChart value={server.metrics.cpu} label="CPU" size={70} />
-                    <MetricChart value={server.metrics.memory} label="MEM" size={70} />
-                    <MetricChart value={server.metrics.disk} label="DISK" size={70} />
+                    <View style={styles.metricItem}>
+                        <Text style={styles.metricValue}>{server.metrics?.responseTime || 0}ms</Text>
+                        <Text style={styles.metricLabel}>Response</Text>
+                    </View>
+                    <View style={styles.metricItem}>
+                        <Text style={styles.metricValue}>{server.metrics?.statusCode || '---'}</Text>
+                        <Text style={styles.metricLabel}>Status</Text>
+                    </View>
+                    <View style={styles.metricItem}>
+                        <Text style={styles.metricValue}>{server.metrics?.uptime || 0}%</Text>
+                        <Text style={styles.metricLabel}>Uptime</Text>
+                    </View>
                 </View>
 
                 <View style={styles.footer}>
                     <View style={styles.footerItem}>
-                        <Ionicons name="time-outline" size={14} color="#94A3B8" />
+                        <Ionicons name="checkmark-done-outline" size={14} color="#94A3B8" />
                         <Text style={styles.footerText}>
-                            {formatUptime(server.metrics.uptime)}
+                            {server.metrics?.successfulChecks || 0}/{server.metrics?.totalChecks || 0} checks
                         </Text>
                     </View>
                     <View style={styles.footerItem}>
-                        <Ionicons name="pulse-outline" size={14} color="#94A3B8" />
+                        <Ionicons name={server.metrics?.ssl ? "lock-closed" : "lock-open"} size={14} color={server.metrics?.ssl ? StatusColors.success : '#94A3B8'} />
                         <Text style={styles.footerText}>
-                            {server.metrics.responseTime}ms
+                            {server.metrics?.ssl ? 'SSL' : 'No SSL'}
                         </Text>
                     </View>
                 </View>
             </Card>
         </TouchableOpacity>
     );
-}
-
-function formatUptime(seconds: number): string {
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    if (days > 0) return `${days}d ${hours}h`;
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
 }
 
 const styles = StyleSheet.create({
@@ -142,6 +144,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         marginBottom: Layout.spacing.md,
+    },
+    metricItem: {
+        alignItems: 'center',
+    },
+    metricValue: {
+        fontSize: Layout.fontSize.xl,
+        fontWeight: '700',
+        color: '#F8FAFC',
+    },
+    metricLabel: {
+        fontSize: Layout.fontSize.xs,
+        color: '#94A3B8',
+        marginTop: 4,
     },
     footer: {
         flexDirection: 'row',
